@@ -16,7 +16,7 @@ export class OpenoceanSdk {
   api: Api
   swapSdk: SwapSdk = swapSdk
 
-  constructor(sdkArg: OpenoceanSdkArg) {
+  constructor(sdkArg?: OpenoceanSdkArg) {
     this.api = new Api(sdkArg ? sdkArg.apiUrl : '')
     this.swapSdk.setApi(this.api)
   }

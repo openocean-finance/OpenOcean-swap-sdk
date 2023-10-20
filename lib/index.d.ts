@@ -12,7 +12,7 @@ export declare class OpenoceanSdk {
     config: Config;
     api: Api;
     swapSdk: SwapSdk;
-    constructor(sdkArg: OpenoceanSdkArg);
+    constructor(sdkArg?: OpenoceanSdkArg);
 }
 import JSBI from 'jsbi';
 export { JSBI };

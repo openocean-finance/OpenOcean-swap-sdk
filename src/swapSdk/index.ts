@@ -8,6 +8,7 @@ import { Swap, ReqSwapVo } from "./Swap";
 import { Api } from "../api";
 import { getBalance } from "./getBalance";
 import { getAllowance } from "./getAllowance";
+import BigNumber from 'bignumber.js';
 
 import { tryWalletConnect, ReqConnectWalletVo } from '@openocean.finance/wallet';
 
@@ -42,7 +43,29 @@ export class SwapSdk {
   }
 
   public fastSwap(swapData: any) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
+      if (this.chain.compiler == 'EVM' && swapData.chainId && this.wallet.key !== "GnosisSafeWallet") {
+        let chainId = await this.wallet.sdk.eth.getChainId()
+        console.log('chainId', chainId, swapData.chainId);
+        if (chainId != swapData.chainId || !chainId) {
+          reject({
+            message: "Please be aware: Your wallet's network is different from OpenOcean's. Switch networks before sending transaction."
+          })
+          return
+        }
+      }
+      let _gasPrice;
+      try {
+        _gasPrice = await this.wallet.sdk.eth.getGasPrice();
+      } catch(e) {
+        console.log('this.wallet.sdk.eth.getGasPrice', e);
+      }
+      if (_gasPrice && swapData.gasPrice) {
+        swapData.gasPrice = BigNumber(_gasPrice).comparedTo(swapData.gasPrice) > 0 ? swapData.gasPrice : _gasPrice;
+      } else if (_gasPrice && !swapData.gasPrice) {
+        swapData.gasPrice = _gasPrice
+      }
+
       this.swap(swapData)
         .on('transactionHash', resolve)
         .on('error', reject);

@@ -31,9 +31,23 @@ export class Approve {
     this.key = 0;
     this.approveContract = reqApproveVo.approveContract;
     this.tokenAddress = reqApproveVo.tokenAddress;
-    if (String(reqApproveVo.gasPrice).indexOf('.') > -1 || Number(reqApproveVo.gasPrice) < 10 ** 6) {
+
+    if (reqApproveVo.gasPrice && (String(reqApproveVo.gasPrice).indexOf('.') > -1 || Number(reqApproveVo.gasPrice) < 10 ** 6)) {
       reqApproveVo.gasPrice = new BigNumber(reqApproveVo.gasPrice + '').times(10 ** 9).toFixed(0)
     }
+
+    let _gasPrice;
+    try {
+      _gasPrice = await this.wallet.sdk.eth.getGasPrice();
+    } catch(e) {
+      console.log('this.wallet.sdk.eth.getGasPrice', e);
+    }
+    if (_gasPrice && reqApproveVo.gasPrice) {
+      reqApproveVo.gasPrice = BigNumber(_gasPrice).comparedTo(reqApproveVo.gasPrice) > 0 ? reqApproveVo.gasPrice : _gasPrice;
+    } else if (_gasPrice && !reqApproveVo.gasPrice) {
+      reqApproveVo.gasPrice = _gasPrice
+    }
+
     if (reqApproveVo.decimals) {
       reqApproveVo.amount = BigNumber(reqApproveVo.amount).times(10 ** reqApproveVo.decimals).toFixed(0)
     }
@@ -244,7 +258,10 @@ export class Approve {
       .allowance(this.account, this.approveContract)
       .call();
     this.key++;
-    if (this.key > 20) return;
+    if (this.key > 20) {
+      this.successCallback(balance);
+      return
+    };
     if (balance >= Number(this.amount)) {
       this.successCallback(balance);
     } else {

@@ -16,6 +16,7 @@ export declare class Swap {
     getGas(): Promise<unknown>;
     sendONTTransaction(): Promise<void>;
     sendSolanaTransaction(): Promise<void>;
+    sendStarknetTransaction(): Promise<void>;
     sendAptosTransaction(): Promise<void>;
     _createTransaction(opt: any, wallet: any): Promise<any>;
     sendNearTransaction(): Promise<void>;

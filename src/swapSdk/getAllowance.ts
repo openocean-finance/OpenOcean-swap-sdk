@@ -23,13 +23,13 @@ export async function getAllowance(account: string, tokenAddress: string, decima
         .call();
       approve = (approve && approve.approve) || approve || 0;
 
-      return utils.getFixed(utils.decimals2Amount(approve || 0, decimals), 6)
+      return utils.decimals2Amount(approve || 0, decimals)
     } catch (e) {
       console.log("triggerConfirmedConstantContract", e);
       return '-1'
     }
   }
-
+  console.log('chainsObj.isNativeToken', chainsObj.isNativeToken(chainName, tokenAddress), chainName, tokenAddress);
   if (chainsObj.isNativeToken(chainName, tokenAddress)) {
     return '-1'
   } else {
@@ -38,7 +38,7 @@ export async function getAllowance(account: string, tokenAddress: string, decima
       const approve = await contract.methods
         .allowance(account, approveContract)
         .call();
-      return utils.getFixed(utils.decimals2Amount(approve || 0, decimals), 6)
+      return utils.decimals2Amount(approve || 0, decimals)
     } catch (e) {
       return '-1'
     }

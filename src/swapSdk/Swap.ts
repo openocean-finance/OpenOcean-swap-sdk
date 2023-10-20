@@ -80,6 +80,9 @@ export class Swap {
         case "COSMOS":
           this.sendCosmosTransaction();
           break;
+        case "STARKNET":
+          this.sendStarknetTransaction();
+          break;
       }
     }, 200);
     return this;
@@ -199,6 +202,19 @@ export class Swap {
       );
       // this.receiptCallback(signature)
       this.transactionHashCallback(signature);
+    } catch (e: any) {
+      this.errorCallback(e.message);
+    }
+  }
+
+  async sendStarknetTransaction() {
+    try {
+      const { transaction }= this.res;
+      console.log('sendStarknetTransaction 1', transaction, this.res);
+      const signature = await this.wallet.sdk.account.execute(transaction);
+      console.log('sendStarknetTransaction 2', signature);
+      const { transaction_hash } = signature || {};
+      this.transactionHashCallback(transaction_hash);
     } catch (e: any) {
       this.errorCallback(e.message);
     }
