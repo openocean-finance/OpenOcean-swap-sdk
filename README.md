@@ -11,7 +11,7 @@ $ yarn add @openocean.finance/openocean-sdk
 
 ```bash
 $ npm install bignumber.js
-$ npm install web3va
+$ npm install web
 ```
 ### More reference links
 https://docs.openocean.finance/dev/aggregator-api-and-sdk/aggregator-sdk
